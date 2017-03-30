@@ -33,17 +33,15 @@ class BinaryReaderOpcnt : public BinaryReaderNop {
  public:
   explicit BinaryReaderOpcnt(OpcntData* data);
 
-  virtual Result OnOpcode(const State&, Opcode opcode);
-  virtual Result OnI32ConstExpr(const State&, uint32_t value);
-  virtual Result OnGetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnSetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnTeeLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnLoadExpr(const State&,
-                            Opcode opcode,
+  virtual Result OnOpcode(Opcode opcode);
+  virtual Result OnI32ConstExpr(uint32_t value);
+  virtual Result OnGetLocalExpr(uint32_t local_index);
+  virtual Result OnSetLocalExpr(uint32_t local_index);
+  virtual Result OnTeeLocalExpr(uint32_t local_index);
+  virtual Result OnLoadExpr(Opcode opcode,
                             uint32_t alignment_log2,
                             uint32_t offset);
-  virtual Result OnStoreExpr(const State&,
-                             Opcode opcode,
+  virtual Result OnStoreExpr(Opcode opcode,
                              uint32_t alignment_log2,
                              uint32_t offset);
 
@@ -77,7 +75,7 @@ static Result AddIntPairCounterValue(IntPairCounterVector* vec,
 
 BinaryReaderOpcnt::BinaryReaderOpcnt(OpcntData* data) : opcnt_data(data) {}
 
-Result BinaryReaderOpcnt::OnOpcode(const State& state, Opcode opcode) {
+Result BinaryReaderOpcnt::OnOpcode(Opcode opcode) {
   IntCounterVector& opcnt_vec = opcnt_data->opcode_vec;
   while (static_cast<size_t>(opcode) >= opcnt_vec.size()) {
     opcnt_vec.emplace_back(opcnt_vec.size(), 0);
@@ -86,28 +84,24 @@ Result BinaryReaderOpcnt::OnOpcode(const State& state, Opcode opcode) {
   return Result::Ok;
 }
 
-Result BinaryReaderOpcnt::OnI32ConstExpr(const State& state, uint32_t value) {
+Result BinaryReaderOpcnt::OnI32ConstExpr(uint32_t value) {
   return AddIntCounterValue(&opcnt_data->i32_const_vec,
                             static_cast<int32_t>(value));
 }
 
-Result BinaryReaderOpcnt::OnGetLocalExpr(const State& state,
-                                         uint32_t local_index) {
+Result BinaryReaderOpcnt::OnGetLocalExpr(uint32_t local_index) {
   return AddIntCounterValue(&opcnt_data->get_local_vec, local_index);
 }
 
-Result BinaryReaderOpcnt::OnSetLocalExpr(const State& state,
-                                         uint32_t local_index) {
+Result BinaryReaderOpcnt::OnSetLocalExpr(uint32_t local_index) {
   return AddIntCounterValue(&opcnt_data->set_local_vec, local_index);
 }
 
-Result BinaryReaderOpcnt::OnTeeLocalExpr(const State& state,
-                                         uint32_t local_index) {
+Result BinaryReaderOpcnt::OnTeeLocalExpr(uint32_t local_index) {
   return AddIntCounterValue(&opcnt_data->tee_local_vec, local_index);
 }
 
-Result BinaryReaderOpcnt::OnLoadExpr(const State& state,
-                                     Opcode opcode,
+Result BinaryReaderOpcnt::OnLoadExpr(Opcode opcode,
                                      uint32_t alignment_log2,
                                      uint32_t offset) {
   if (opcode == Opcode::I32Load) {
@@ -117,8 +111,7 @@ Result BinaryReaderOpcnt::OnLoadExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderOpcnt::OnStoreExpr(const State& state,
-                                      Opcode opcode,
+Result BinaryReaderOpcnt::OnStoreExpr(Opcode opcode,
                                       uint32_t alignment_log2,
                                       uint32_t offset) {
   if (opcode == Opcode::I32Store) {

@@ -53,178 +53,141 @@ class BinaryReaderAST : public BinaryReaderNop {
  public:
   BinaryReaderAST(Module* out_module, BinaryErrorHandler* error_handler);
 
-  virtual bool OnError(const State&, const char* message);
+  virtual bool OnError(const char* message);
 
-  virtual Result OnTypeCount(const State&, uint32_t count);
-  virtual Result OnType(const State&,
-                        uint32_t index,
+  virtual Result OnTypeCount(uint32_t count);
+  virtual Result OnType(uint32_t index,
                         uint32_t param_count,
                         Type* param_types,
                         uint32_t result_count,
                         Type* result_types);
 
-  virtual Result OnImportCount(const State&, uint32_t count);
-  virtual Result OnImport(const State&,
-                          uint32_t index,
+  virtual Result OnImportCount(uint32_t count);
+  virtual Result OnImport(uint32_t index,
                           StringSlice module_name,
                           StringSlice field_name);
-  virtual Result OnImportFunc(const State&,
-                              uint32_t import_index,
+  virtual Result OnImportFunc(uint32_t import_index,
                               StringSlice module_name,
                               StringSlice field_name,
                               uint32_t func_index,
                               uint32_t sig_index);
-  virtual Result OnImportTable(const State&,
-                               uint32_t import_index,
+  virtual Result OnImportTable(uint32_t import_index,
                                StringSlice module_name,
                                StringSlice field_name,
                                uint32_t table_index,
                                Type elem_type,
                                const Limits* elem_limits);
-  virtual Result OnImportMemory(const State&,
-                                uint32_t import_index,
+  virtual Result OnImportMemory(uint32_t import_index,
                                 StringSlice module_name,
                                 StringSlice field_name,
                                 uint32_t memory_index,
                                 const Limits* page_limits);
-  virtual Result OnImportGlobal(const State&,
-                                uint32_t import_index,
+  virtual Result OnImportGlobal(uint32_t import_index,
                                 StringSlice module_name,
                                 StringSlice field_name,
                                 uint32_t global_index,
                                 Type type,
                                 bool mutable_);
 
-  virtual Result OnFunctionCount(const State&, uint32_t count);
-  virtual Result OnFunction(const State&, uint32_t index, uint32_t sig_index);
+  virtual Result OnFunctionCount(uint32_t count);
+  virtual Result OnFunction(uint32_t index, uint32_t sig_index);
 
-  virtual Result OnTableCount(const State&, uint32_t count);
-  virtual Result OnTable(const State&,
-                         uint32_t index,
+  virtual Result OnTableCount(uint32_t count);
+  virtual Result OnTable(uint32_t index,
                          Type elem_type,
                          const Limits* elem_limits);
 
-  virtual Result OnMemoryCount(const State&, uint32_t count);
-  virtual Result OnMemory(const State&, uint32_t index, const Limits* limits);
+  virtual Result OnMemoryCount(uint32_t count);
+  virtual Result OnMemory(uint32_t index, const Limits* limits);
 
-  virtual Result OnGlobalCount(const State&, uint32_t count);
-  virtual Result BeginGlobal(const State&,
-                             uint32_t index,
-                             Type type,
-                             bool mutable_);
-  virtual Result BeginGlobalInitExpr(const State&, uint32_t index);
-  virtual Result EndGlobalInitExpr(const State&, uint32_t index);
+  virtual Result OnGlobalCount(uint32_t count);
+  virtual Result BeginGlobal(uint32_t index, Type type, bool mutable_);
+  virtual Result BeginGlobalInitExpr(uint32_t index);
+  virtual Result EndGlobalInitExpr(uint32_t index);
 
-  virtual Result OnExportCount(const State&, uint32_t count);
-  virtual Result OnExport(const State&,
-                          uint32_t index,
+  virtual Result OnExportCount(uint32_t count);
+  virtual Result OnExport(uint32_t index,
                           ExternalKind kind,
                           uint32_t item_index,
                           StringSlice name);
 
-  virtual Result OnStartFunction(const State&, uint32_t func_index);
+  virtual Result OnStartFunction(uint32_t func_index);
 
-  virtual Result OnFunctionBodyCount(const State&, uint32_t count);
-  virtual Result BeginFunctionBody(const State&, uint32_t index);
-  virtual Result OnLocalDecl(const State&,
-                             uint32_t decl_index,
-                             uint32_t count,
-                             Type type);
+  virtual Result OnFunctionBodyCount(uint32_t count);
+  virtual Result BeginFunctionBody(uint32_t index);
+  virtual Result OnLocalDecl(uint32_t decl_index, uint32_t count, Type type);
 
-  virtual Result OnBinaryExpr(const State&, Opcode opcode);
-  virtual Result OnBlockExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnBrExpr(const State&, uint32_t depth);
-  virtual Result OnBrIfExpr(const State&, uint32_t depth);
-  virtual Result OnBrTableExpr(const State&,
-                               uint32_t num_targets,
+  virtual Result OnBinaryExpr(Opcode opcode);
+  virtual Result OnBlockExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnBrExpr(uint32_t depth);
+  virtual Result OnBrIfExpr(uint32_t depth);
+  virtual Result OnBrTableExpr(uint32_t num_targets,
                                uint32_t* target_depths,
                                uint32_t default_target_depth);
-  virtual Result OnCallExpr(const State&, uint32_t func_index);
-  virtual Result OnCallIndirectExpr(const State&, uint32_t sig_index);
-  virtual Result OnCompareExpr(const State&, Opcode opcode);
-  virtual Result OnConvertExpr(const State&, Opcode opcode);
-  virtual Result OnDropExpr(const State&);
-  virtual Result OnElseExpr(const State&);
-  virtual Result OnEndExpr(const State&);
-  virtual Result OnF32ConstExpr(const State&, uint32_t value_bits);
-  virtual Result OnF64ConstExpr(const State&, uint64_t value_bits);
-  virtual Result OnGetGlobalExpr(const State&, uint32_t global_index);
-  virtual Result OnGetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnGrowMemoryExpr(const State&);
-  virtual Result OnI32ConstExpr(const State&, uint32_t value);
-  virtual Result OnI64ConstExpr(const State&, uint64_t value);
-  virtual Result OnIfExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnLoadExpr(const State&,
-                            Opcode opcode,
+  virtual Result OnCallExpr(uint32_t func_index);
+  virtual Result OnCallIndirectExpr(uint32_t sig_index);
+  virtual Result OnCompareExpr(Opcode opcode);
+  virtual Result OnConvertExpr(Opcode opcode);
+  virtual Result OnDropExpr();
+  virtual Result OnElseExpr();
+  virtual Result OnEndExpr();
+  virtual Result OnF32ConstExpr(uint32_t value_bits);
+  virtual Result OnF64ConstExpr(uint64_t value_bits);
+  virtual Result OnGetGlobalExpr(uint32_t global_index);
+  virtual Result OnGetLocalExpr(uint32_t local_index);
+  virtual Result OnGrowMemoryExpr();
+  virtual Result OnI32ConstExpr(uint32_t value);
+  virtual Result OnI64ConstExpr(uint64_t value);
+  virtual Result OnIfExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnLoadExpr(Opcode opcode,
                             uint32_t alignment_log2,
                             uint32_t offset);
-  virtual Result OnLoopExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnCurrentMemoryExpr(const State&);
-  virtual Result OnNopExpr(const State&);
-  virtual Result OnReturnExpr(const State&);
-  virtual Result OnSelectExpr(const State&);
-  virtual Result OnSetGlobalExpr(const State&, uint32_t global_index);
-  virtual Result OnSetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnStoreExpr(const State&,
-                             Opcode opcode,
+  virtual Result OnLoopExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnCurrentMemoryExpr();
+  virtual Result OnNopExpr();
+  virtual Result OnReturnExpr();
+  virtual Result OnSelectExpr();
+  virtual Result OnSetGlobalExpr(uint32_t global_index);
+  virtual Result OnSetLocalExpr(uint32_t local_index);
+  virtual Result OnStoreExpr(Opcode opcode,
                              uint32_t alignment_log2,
                              uint32_t offset);
-  virtual Result OnTeeLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnUnaryExpr(const State&, Opcode opcode);
-  virtual Result OnUnreachableExpr(const State&);
-  virtual Result EndFunctionBody(const State&, uint32_t index);
+  virtual Result OnTeeLocalExpr(uint32_t local_index);
+  virtual Result OnUnaryExpr(Opcode opcode);
+  virtual Result OnUnreachableExpr();
+  virtual Result EndFunctionBody(uint32_t index);
 
-  virtual Result OnElemSegmentCount(const State&, uint32_t count);
-  virtual Result BeginElemSegment(const State&,
-                                  uint32_t index,
-                                  uint32_t table_index);
-  virtual Result BeginElemSegmentInitExpr(const State&, uint32_t index);
-  virtual Result EndElemSegmentInitExpr(const State&, uint32_t index);
-  virtual Result OnElemSegmentFunctionIndexCount(const State&,
-                                                 uint32_t index,
+  virtual Result OnElemSegmentCount(uint32_t count);
+  virtual Result BeginElemSegment(uint32_t index, uint32_t table_index);
+  virtual Result BeginElemSegmentInitExpr(uint32_t index);
+  virtual Result EndElemSegmentInitExpr(uint32_t index);
+  virtual Result OnElemSegmentFunctionIndexCount(uint32_t index,
                                                  uint32_t count);
-  virtual Result OnElemSegmentFunctionIndex(const State&,
-                                            uint32_t index,
+  virtual Result OnElemSegmentFunctionIndex(uint32_t index,
                                             uint32_t func_index);
 
-  virtual Result OnDataSegmentCount(const State&, uint32_t count);
-  virtual Result BeginDataSegment(const State&,
-                                  uint32_t index,
-                                  uint32_t memory_index);
-  virtual Result BeginDataSegmentInitExpr(const State&, uint32_t index);
-  virtual Result EndDataSegmentInitExpr(const State&, uint32_t index);
-  virtual Result OnDataSegmentData(const State&,
-                                   uint32_t index,
+  virtual Result OnDataSegmentCount(uint32_t count);
+  virtual Result BeginDataSegment(uint32_t index, uint32_t memory_index);
+  virtual Result BeginDataSegmentInitExpr(uint32_t index);
+  virtual Result EndDataSegmentInitExpr(uint32_t index);
+  virtual Result OnDataSegmentData(uint32_t index,
                                    const void* data,
                                    uint32_t size);
 
-  virtual Result OnFunctionNamesCount(const State&, uint32_t num_functions);
-  virtual Result OnFunctionName(const State&,
-                                uint32_t function_index,
+  virtual Result OnFunctionNamesCount(uint32_t num_functions);
+  virtual Result OnFunctionName(uint32_t function_index,
                                 StringSlice function_name);
-  virtual Result OnLocalNameLocalCount(const State&,
-                                       uint32_t function_index,
+  virtual Result OnLocalNameLocalCount(uint32_t function_index,
                                        uint32_t num_locals);
-  virtual Result OnLocalName(const State&,
-                             uint32_t function_index,
+  virtual Result OnLocalName(uint32_t function_index,
                              uint32_t local_index,
                              StringSlice local_name);
 
-  virtual Result OnInitExprF32ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint32_t value);
-  virtual Result OnInitExprF64ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint64_t value);
-  virtual Result OnInitExprGetGlobalExpr(const State&,
-                                         uint32_t index,
-                                         uint32_t global_index);
-  virtual Result OnInitExprI32ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint32_t value);
-  virtual Result OnInitExprI64ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint64_t value);
+  virtual Result OnInitExprF32ConstExpr(uint32_t index, uint32_t value);
+  virtual Result OnInitExprF64ConstExpr(uint32_t index, uint64_t value);
+  virtual Result OnInitExprGetGlobalExpr(uint32_t index, uint32_t global_index);
+  virtual Result OnInitExprI32ConstExpr(uint32_t index, uint32_t value);
+  virtual Result OnInitExprI64ConstExpr(uint32_t index, uint64_t value);
 
  private:
   bool HandleError(uint32_t offset, const char* message);
@@ -307,17 +270,16 @@ bool BinaryReaderAST::HandleError(uint32_t offset, const char* message) {
   return false;
 }
 
-bool BinaryReaderAST::OnError(const State& state, const char* message) {
-  return HandleError(state.offset, message);
+bool BinaryReaderAST::OnError(const char* message) {
+  return HandleError(state->offset, message);
 }
 
-Result BinaryReaderAST::OnTypeCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnTypeCount(uint32_t count) {
   module->func_types.reserve(count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnType(const State& state,
-                               uint32_t index,
+Result BinaryReaderAST::OnType(uint32_t index,
                                uint32_t param_count,
                                Type* param_types,
                                uint32_t result_count,
@@ -333,13 +295,12 @@ Result BinaryReaderAST::OnType(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImportCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnImportCount(uint32_t count) {
   module->imports.reserve(count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImport(const State& state,
-                                 uint32_t index,
+Result BinaryReaderAST::OnImport(uint32_t index,
                                  StringSlice module_name,
                                  StringSlice field_name) {
   ModuleField* field = append_module_field(module);
@@ -353,8 +314,7 @@ Result BinaryReaderAST::OnImport(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImportFunc(const State& state,
-                                     uint32_t import_index,
+Result BinaryReaderAST::OnImportFunc(uint32_t import_index,
                                      StringSlice module_name,
                                      StringSlice field_name,
                                      uint32_t func_index,
@@ -374,8 +334,7 @@ Result BinaryReaderAST::OnImportFunc(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImportTable(const State& state,
-                                      uint32_t import_index,
+Result BinaryReaderAST::OnImportTable(uint32_t import_index,
                                       StringSlice module_name,
                                       StringSlice field_name,
                                       uint32_t table_index,
@@ -391,8 +350,7 @@ Result BinaryReaderAST::OnImportTable(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImportMemory(const State& state,
-                                       uint32_t import_index,
+Result BinaryReaderAST::OnImportMemory(uint32_t import_index,
                                        StringSlice module_name,
                                        StringSlice field_name,
                                        uint32_t memory_index,
@@ -407,8 +365,7 @@ Result BinaryReaderAST::OnImportMemory(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnImportGlobal(const State& state,
-                                       uint32_t import_index,
+Result BinaryReaderAST::OnImportGlobal(uint32_t import_index,
                                        StringSlice module_name,
                                        StringSlice field_name,
                                        uint32_t global_index,
@@ -425,14 +382,12 @@ Result BinaryReaderAST::OnImportGlobal(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnFunctionCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnFunctionCount(uint32_t count) {
   module->funcs.reserve(module->num_func_imports + count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnFunction(const State& state,
-                                   uint32_t index,
-                                   uint32_t sig_index) {
+Result BinaryReaderAST::OnFunction(uint32_t index, uint32_t sig_index) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::Func;
   field->func = new Func();
@@ -447,13 +402,12 @@ Result BinaryReaderAST::OnFunction(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnTableCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnTableCount(uint32_t count) {
   module->tables.reserve(module->num_table_imports + count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnTable(const State& state,
-                                uint32_t index,
+Result BinaryReaderAST::OnTable(uint32_t index,
                                 Type elem_type,
                                 const Limits* elem_limits) {
   ModuleField* field = append_module_field(module);
@@ -464,14 +418,12 @@ Result BinaryReaderAST::OnTable(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnMemoryCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnMemoryCount(uint32_t count) {
   module->memories.reserve(module->num_memory_imports + count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnMemory(const State& state,
-                                 uint32_t index,
-                                 const Limits* page_limits) {
+Result BinaryReaderAST::OnMemory(uint32_t index, const Limits* page_limits) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::Memory;
   field->memory = new Memory();
@@ -480,15 +432,12 @@ Result BinaryReaderAST::OnMemory(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnGlobalCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnGlobalCount(uint32_t count) {
   module->globals.reserve(module->num_global_imports + count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginGlobal(const State& state,
-                                    uint32_t index,
-                                    Type type,
-                                    bool mutable_) {
+Result BinaryReaderAST::BeginGlobal(uint32_t index, Type type, bool mutable_) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::Global;
   field->global = new Global();
@@ -498,26 +447,24 @@ Result BinaryReaderAST::BeginGlobal(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginGlobalInitExpr(const State& state,
-                                            uint32_t index) {
+Result BinaryReaderAST::BeginGlobalInitExpr(uint32_t index) {
   assert(index == module->globals.size() - 1);
   Global* global = module->globals[index];
   current_init_expr = &global->init_expr;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::EndGlobalInitExpr(const State& state, uint32_t index) {
+Result BinaryReaderAST::EndGlobalInitExpr(uint32_t index) {
   current_init_expr = nullptr;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnExportCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnExportCount(uint32_t count) {
   module->exports.reserve(count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnExport(const State& state,
-                                 uint32_t index,
+Result BinaryReaderAST::OnExport(uint32_t index,
                                  ExternalKind kind,
                                  uint32_t item_index,
                                  StringSlice name) {
@@ -548,8 +495,7 @@ Result BinaryReaderAST::OnExport(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnStartFunction(const State& state,
-                                        uint32_t func_index) {
+Result BinaryReaderAST::OnStartFunction(uint32_t func_index) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::Start;
 
@@ -561,20 +507,18 @@ Result BinaryReaderAST::OnStartFunction(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnFunctionBodyCount(const State& state,
-                                            uint32_t count) {
+Result BinaryReaderAST::OnFunctionBodyCount(uint32_t count) {
   assert(module->num_func_imports + count == module->funcs.size());
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginFunctionBody(const State& state, uint32_t index) {
+Result BinaryReaderAST::BeginFunctionBody(uint32_t index) {
   current_func = module->funcs[index];
   PushLabel(LabelType::Func, &current_func->first_expr);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnLocalDecl(const State& state,
-                                    uint32_t decl_index,
+Result BinaryReaderAST::OnLocalDecl(uint32_t decl_index,
                                     uint32_t count,
                                     Type type) {
   TypeVector& types = current_func->local_types;
@@ -584,14 +528,12 @@ Result BinaryReaderAST::OnLocalDecl(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnBinaryExpr(const State& state, Opcode opcode) {
+Result BinaryReaderAST::OnBinaryExpr(Opcode opcode) {
   Expr* expr = Expr::CreateBinary(opcode);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnBlockExpr(const State& state,
-                                    uint32_t num_types,
-                                    Type* sig_types) {
+Result BinaryReaderAST::OnBlockExpr(uint32_t num_types, Type* sig_types) {
   Expr* expr = Expr::CreateBlock(new Block());
   expr->block->sig.assign(sig_types, sig_types + num_types);
   AppendExpr(expr);
@@ -599,18 +541,17 @@ Result BinaryReaderAST::OnBlockExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnBrExpr(const State& state, uint32_t depth) {
+Result BinaryReaderAST::OnBrExpr(uint32_t depth) {
   Expr* expr = Expr::CreateBr(Var(depth));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnBrIfExpr(const State& state, uint32_t depth) {
+Result BinaryReaderAST::OnBrIfExpr(uint32_t depth) {
   Expr* expr = Expr::CreateBrIf(Var(depth));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnBrTableExpr(const State& state,
-                                      uint32_t num_targets,
+Result BinaryReaderAST::OnBrTableExpr(uint32_t num_targets,
                                       uint32_t* target_depths,
                                       uint32_t default_target_depth) {
   VarVector* targets = new VarVector();
@@ -622,40 +563,39 @@ Result BinaryReaderAST::OnBrTableExpr(const State& state,
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnCallExpr(const State& state, uint32_t func_index) {
+Result BinaryReaderAST::OnCallExpr(uint32_t func_index) {
   assert(func_index < module->funcs.size());
   Expr* expr = Expr::CreateCall(Var(func_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnCallIndirectExpr(const State& state,
-                                           uint32_t sig_index) {
+Result BinaryReaderAST::OnCallIndirectExpr(uint32_t sig_index) {
   assert(sig_index < module->func_types.size());
   Expr* expr = Expr::CreateCallIndirect(Var(sig_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnCompareExpr(const State& state, Opcode opcode) {
+Result BinaryReaderAST::OnCompareExpr(Opcode opcode) {
   Expr* expr = Expr::CreateCompare(opcode);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnConvertExpr(const State& state, Opcode opcode) {
+Result BinaryReaderAST::OnConvertExpr(Opcode opcode) {
   Expr* expr = Expr::CreateConvert(opcode);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnCurrentMemoryExpr(const State& state) {
+Result BinaryReaderAST::OnCurrentMemoryExpr() {
   Expr* expr = Expr::CreateCurrentMemory();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnDropExpr(const State& state) {
+Result BinaryReaderAST::OnDropExpr() {
   Expr* expr = Expr::CreateDrop();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnElseExpr(const State& state) {
+Result BinaryReaderAST::OnElseExpr() {
   LabelNode* label;
   CHECK_RESULT(TopLabel(&label));
   if (label->label_type != LabelType::If) {
@@ -673,52 +613,46 @@ Result BinaryReaderAST::OnElseExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnEndExpr(const State& state) {
+Result BinaryReaderAST::OnEndExpr() {
   return PopLabel();
 }
 
-Result BinaryReaderAST::OnF32ConstExpr(const State& state,
-                                       uint32_t value_bits) {
+Result BinaryReaderAST::OnF32ConstExpr(uint32_t value_bits) {
   Expr* expr = Expr::CreateConst(Const(Const::F32(), value_bits));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnF64ConstExpr(const State& state,
-                                       uint64_t value_bits) {
+Result BinaryReaderAST::OnF64ConstExpr(uint64_t value_bits) {
   Expr* expr = Expr::CreateConst(Const(Const::F64(), value_bits));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnGetGlobalExpr(const State& state,
-                                        uint32_t global_index) {
+Result BinaryReaderAST::OnGetGlobalExpr(uint32_t global_index) {
   Expr* expr = Expr::CreateGetGlobal(Var(global_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnGetLocalExpr(const State& state,
-                                       uint32_t local_index) {
+Result BinaryReaderAST::OnGetLocalExpr(uint32_t local_index) {
   Expr* expr = Expr::CreateGetLocal(Var(local_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnGrowMemoryExpr(const State& state) {
+Result BinaryReaderAST::OnGrowMemoryExpr() {
   Expr* expr = Expr::CreateGrowMemory();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnI32ConstExpr(const State& state, uint32_t value) {
+Result BinaryReaderAST::OnI32ConstExpr(uint32_t value) {
   Expr* expr = Expr::CreateConst(Const(Const::I32(), value));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnI64ConstExpr(const State& state, uint64_t value) {
+Result BinaryReaderAST::OnI64ConstExpr(uint64_t value) {
   Expr* expr = Expr::CreateConst(Const(Const::I64(), value));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnIfExpr(const State& state,
-                                 uint32_t num_types,
-                                 Type* sig_types) {
+Result BinaryReaderAST::OnIfExpr(uint32_t num_types, Type* sig_types) {
   Expr* expr = Expr::CreateIf(new Block());
   expr->if_.true_->sig.assign(sig_types, sig_types + num_types);
   expr->if_.false_ = nullptr;
@@ -727,17 +661,14 @@ Result BinaryReaderAST::OnIfExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnLoadExpr(const State& state,
-                                   Opcode opcode,
+Result BinaryReaderAST::OnLoadExpr(Opcode opcode,
                                    uint32_t alignment_log2,
                                    uint32_t offset) {
   Expr* expr = Expr::CreateLoad(opcode, 1 << alignment_log2, offset);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnLoopExpr(const State& state,
-                                   uint32_t num_types,
-                                   Type* sig_types) {
+Result BinaryReaderAST::OnLoopExpr(uint32_t num_types, Type* sig_types) {
   Expr* expr = Expr::CreateLoop(new Block());
   expr->loop->sig.assign(sig_types, sig_types + num_types);
   AppendExpr(expr);
@@ -745,71 +676,65 @@ Result BinaryReaderAST::OnLoopExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnNopExpr(const State& state) {
+Result BinaryReaderAST::OnNopExpr() {
   Expr* expr = Expr::CreateNop();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnReturnExpr(const State& state) {
+Result BinaryReaderAST::OnReturnExpr() {
   Expr* expr = Expr::CreateReturn();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnSelectExpr(const State& state) {
+Result BinaryReaderAST::OnSelectExpr() {
   Expr* expr = Expr::CreateSelect();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnSetGlobalExpr(const State& state,
-                                        uint32_t global_index) {
+Result BinaryReaderAST::OnSetGlobalExpr(uint32_t global_index) {
   Expr* expr = Expr::CreateSetGlobal(Var(global_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnSetLocalExpr(const State& state,
-                                       uint32_t local_index) {
+Result BinaryReaderAST::OnSetLocalExpr(uint32_t local_index) {
   Expr* expr = Expr::CreateSetLocal(Var(local_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnStoreExpr(const State& state,
-                                    Opcode opcode,
+Result BinaryReaderAST::OnStoreExpr(Opcode opcode,
                                     uint32_t alignment_log2,
                                     uint32_t offset) {
   Expr* expr = Expr::CreateStore(opcode, 1 << alignment_log2, offset);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnTeeLocalExpr(const State& state,
-                                       uint32_t local_index) {
+Result BinaryReaderAST::OnTeeLocalExpr(uint32_t local_index) {
   Expr* expr = Expr::CreateTeeLocal(Var(local_index));
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnUnaryExpr(const State& state, Opcode opcode) {
+Result BinaryReaderAST::OnUnaryExpr(Opcode opcode) {
   Expr* expr = Expr::CreateUnary(opcode);
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::OnUnreachableExpr(const State& state) {
+Result BinaryReaderAST::OnUnreachableExpr() {
   Expr* expr = Expr::CreateUnreachable();
   return AppendExpr(expr);
 }
 
-Result BinaryReaderAST::EndFunctionBody(const State& state, uint32_t index) {
+Result BinaryReaderAST::EndFunctionBody(uint32_t index) {
   CHECK_RESULT(PopLabel());
   current_func = nullptr;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnElemSegmentCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnElemSegmentCount(uint32_t count) {
   module->elem_segments.reserve(count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginElemSegment(const State& state,
-                                         uint32_t index,
-                                         uint32_t table_index) {
+Result BinaryReaderAST::BeginElemSegment(uint32_t index, uint32_t table_index) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::ElemSegment;
   field->elem_segment = new ElemSegment();
@@ -819,22 +744,19 @@ Result BinaryReaderAST::BeginElemSegment(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginElemSegmentInitExpr(const State& state,
-                                                 uint32_t index) {
+Result BinaryReaderAST::BeginElemSegmentInitExpr(uint32_t index) {
   assert(index == module->elem_segments.size() - 1);
   ElemSegment* segment = module->elem_segments[index];
   current_init_expr = &segment->offset;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::EndElemSegmentInitExpr(const State& state,
-                                               uint32_t index) {
+Result BinaryReaderAST::EndElemSegmentInitExpr(uint32_t index) {
   current_init_expr = nullptr;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnElemSegmentFunctionIndexCount(const State& state,
-                                                        uint32_t index,
+Result BinaryReaderAST::OnElemSegmentFunctionIndexCount(uint32_t index,
                                                         uint32_t count) {
   assert(index == module->elem_segments.size() - 1);
   ElemSegment* segment = module->elem_segments[index];
@@ -842,8 +764,7 @@ Result BinaryReaderAST::OnElemSegmentFunctionIndexCount(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnElemSegmentFunctionIndex(const State& state,
-                                                   uint32_t index,
+Result BinaryReaderAST::OnElemSegmentFunctionIndex(uint32_t index,
                                                    uint32_t func_index) {
   assert(index == module->elem_segments.size() - 1);
   ElemSegment* segment = module->elem_segments[index];
@@ -854,13 +775,12 @@ Result BinaryReaderAST::OnElemSegmentFunctionIndex(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnDataSegmentCount(const State& state, uint32_t count) {
+Result BinaryReaderAST::OnDataSegmentCount(uint32_t count) {
   module->data_segments.reserve(count);
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginDataSegment(const State& state,
-                                         uint32_t index,
+Result BinaryReaderAST::BeginDataSegment(uint32_t index,
                                          uint32_t memory_index) {
   ModuleField* field = append_module_field(module);
   field->type = ModuleFieldType::DataSegment;
@@ -871,22 +791,19 @@ Result BinaryReaderAST::BeginDataSegment(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::BeginDataSegmentInitExpr(const State& state,
-                                                 uint32_t index) {
+Result BinaryReaderAST::BeginDataSegmentInitExpr(uint32_t index) {
   assert(index == module->data_segments.size() - 1);
   DataSegment* segment = module->data_segments[index];
   current_init_expr = &segment->offset;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::EndDataSegmentInitExpr(const State& state,
-                                               uint32_t index) {
+Result BinaryReaderAST::EndDataSegmentInitExpr(uint32_t index) {
   current_init_expr = nullptr;
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnDataSegmentData(const State& state,
-                                          uint32_t index,
+Result BinaryReaderAST::OnDataSegmentData(uint32_t index,
                                           const void* data,
                                           uint32_t size) {
   assert(index == module->data_segments.size() - 1);
@@ -897,8 +814,7 @@ Result BinaryReaderAST::OnDataSegmentData(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnFunctionNamesCount(const State& state,
-                                             uint32_t count) {
+Result BinaryReaderAST::OnFunctionNamesCount(uint32_t count) {
   if (count > module->funcs.size()) {
     PrintError("expected function name count (%u) <= function count (%" PRIzd
                ")",
@@ -908,9 +824,7 @@ Result BinaryReaderAST::OnFunctionNamesCount(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnFunctionName(const State& state,
-                                       uint32_t index,
-                                       StringSlice name) {
+Result BinaryReaderAST::OnFunctionName(uint32_t index, StringSlice name) {
   if (string_slice_is_empty(&name))
     return Result::Ok;
 
@@ -920,9 +834,7 @@ Result BinaryReaderAST::OnFunctionName(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnLocalNameLocalCount(const State& state,
-                                              uint32_t index,
-                                              uint32_t count) {
+Result BinaryReaderAST::OnLocalNameLocalCount(uint32_t index, uint32_t count) {
   assert(index < module->funcs.size());
   Func* func = module->funcs[index];
   uint32_t num_params_and_locals = get_num_params_and_locals(func);
@@ -934,43 +846,33 @@ Result BinaryReaderAST::OnLocalNameLocalCount(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnInitExprF32ConstExpr(const State& state,
-                                               uint32_t index,
-                                               uint32_t value) {
+Result BinaryReaderAST::OnInitExprF32ConstExpr(uint32_t index, uint32_t value) {
   *current_init_expr = Expr::CreateConst(Const(Const::F32(), value));
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnInitExprF64ConstExpr(const State& state,
-                                               uint32_t index,
-                                               uint64_t value) {
+Result BinaryReaderAST::OnInitExprF64ConstExpr(uint32_t index, uint64_t value) {
   *current_init_expr = Expr::CreateConst(Const(Const::F64(), value));
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnInitExprGetGlobalExpr(const State& state,
-                                                uint32_t index,
+Result BinaryReaderAST::OnInitExprGetGlobalExpr(uint32_t index,
                                                 uint32_t global_index) {
   *current_init_expr = Expr::CreateGetGlobal(Var(global_index));
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnInitExprI32ConstExpr(const State& state,
-                                               uint32_t index,
-                                               uint32_t value) {
+Result BinaryReaderAST::OnInitExprI32ConstExpr(uint32_t index, uint32_t value) {
   *current_init_expr = Expr::CreateConst(Const(Const::I32(), value));
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnInitExprI64ConstExpr(const State& state,
-                                               uint32_t index,
-                                               uint64_t value) {
+Result BinaryReaderAST::OnInitExprI64ConstExpr(uint32_t index, uint64_t value) {
   *current_init_expr = Expr::CreateConst(Const(Const::I64(), value));
   return Result::Ok;
 }
 
-Result BinaryReaderAST::OnLocalName(const State& state,
-                                    uint32_t func_index,
+Result BinaryReaderAST::OnLocalName(uint32_t func_index,
                                     uint32_t local_index,
                                     StringSlice name) {
   if (string_slice_is_empty(&name))

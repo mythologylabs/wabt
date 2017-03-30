@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "logging-binary-reader.h"
+#include "binary-reader-logging.h"
 
 #include <inttypes.h>
 
@@ -48,19 +48,19 @@ void sprint_limits(char* dst, size_t size, const Limits* limits) {
 
 }  // namespace
 
-LoggingBinaryReader::LoggingBinaryReader(Stream* stream, BinaryReader* forward)
+BinaryReaderLogging::BinaryReaderLogging(Stream* stream, BinaryReader* forward)
     : stream(stream), reader(forward), indent(0) {}
 
-void LoggingBinaryReader::Indent() {
+void BinaryReaderLogging::Indent() {
   indent += INDENT_SIZE;
 }
 
-void LoggingBinaryReader::Dedent() {
+void BinaryReaderLogging::Dedent() {
   indent -= INDENT_SIZE;
   assert(indent >= 0);
 }
 
-void LoggingBinaryReader::WriteIndent() {
+void BinaryReaderLogging::WriteIndent() {
   static char s_indent[] =
       "                                                                       "
       "                                                                       ";
@@ -75,7 +75,7 @@ void LoggingBinaryReader::WriteIndent() {
   }
 }
 
-void LoggingBinaryReader::LogTypes(uint32_t type_count, Type* types) {
+void BinaryReaderLogging::LogTypes(uint32_t type_count, Type* types) {
   LOGF_NOINDENT("[");
   for (uint32_t i = 0; i < type_count; ++i) {
     LOGF_NOINDENT("%s", get_type_name(types[i]));
@@ -85,34 +85,35 @@ void LoggingBinaryReader::LogTypes(uint32_t type_count, Type* types) {
   LOGF_NOINDENT("]");
 }
 
-bool LoggingBinaryReader::OnError(const State& state, const char* message) {
-  return reader->OnError(state, message);
+bool BinaryReaderLogging::OnError(const char* message) {
+  return reader->OnError(message);
 }
 
-Result LoggingBinaryReader::BeginModule(const State& state, uint32_t version) {
+void BinaryReaderLogging::OnSetState(const State* s) {
+  BinaryReader::OnSetState(s);
+  reader->OnSetState(s);
+}
+
+Result BinaryReaderLogging::BeginModule(uint32_t version) {
   LOGF("BeginModule(version: %u)\n", version);
   Indent();
-  return reader->BeginModule(state, version);
+  return reader->BeginModule(version);
 }
 
-
-Result LoggingBinaryReader::BeginSection(const State& state,
-                                         BinarySection section_type,
+Result BinaryReaderLogging::BeginSection(BinarySection section_type,
                                          uint32_t size) {
-  return reader->BeginSection(state, section_type, size);
+  return reader->BeginSection(section_type, size);
 }
 
-Result LoggingBinaryReader::BeginCustomSection(const State& state,
-                                               uint32_t size,
+Result BinaryReaderLogging::BeginCustomSection(uint32_t size,
                                                StringSlice section_name) {
   LOGF("BeginCustomSection('" PRIstringslice "', size: %d)\n",
        WABT_PRINTF_STRING_SLICE_ARG(section_name), size);
   Indent();
-  return reader->BeginCustomSection(state, size, section_name);
+  return reader->BeginCustomSection(size, section_name);
 }
 
-Result LoggingBinaryReader::OnType(const State& state,
-                                   uint32_t index,
+Result BinaryReaderLogging::OnType(uint32_t index,
                                    uint32_t param_count,
                                    Type* param_types,
                                    uint32_t result_count,
@@ -122,35 +123,32 @@ Result LoggingBinaryReader::OnType(const State& state,
   LOGF_NOINDENT(", results: ");
   LogTypes(result_count, result_types);
   LOGF_NOINDENT(")\n");
-  return reader->OnType(state, index, param_count, param_types, result_count,
+  return reader->OnType(index, param_count, param_types, result_count,
                         result_types);
 }
 
-Result LoggingBinaryReader::OnImport(const State& state,
-                                     uint32_t index,
+Result BinaryReaderLogging::OnImport(uint32_t index,
                                      StringSlice module_name,
                                      StringSlice field_name) {
   LOGF("OnImport(index: %u, module: \"" PRIstringslice
        "\", field: \"" PRIstringslice "\")\n",
        index, WABT_PRINTF_STRING_SLICE_ARG(module_name),
        WABT_PRINTF_STRING_SLICE_ARG(field_name));
-  return reader->OnImport(state, index, module_name, field_name);
+  return reader->OnImport(index, module_name, field_name);
 }
 
-Result LoggingBinaryReader::OnImportFunc(const State& state,
-                                         uint32_t import_index,
+Result BinaryReaderLogging::OnImportFunc(uint32_t import_index,
                                          StringSlice module_name,
                                          StringSlice field_name,
                                          uint32_t func_index,
                                          uint32_t sig_index) {
   LOGF("OnImportFunc(import_index: %u, func_index: %u, sig_index: %u)\n",
        import_index, func_index, sig_index);
-  return reader->OnImportFunc(state, import_index, module_name, field_name,
-                              func_index, sig_index);
+  return reader->OnImportFunc(import_index, module_name, field_name, func_index,
+                              sig_index);
 }
 
-Result LoggingBinaryReader::OnImportTable(const State& state,
-                                          uint32_t import_index,
+Result BinaryReaderLogging::OnImportTable(uint32_t import_index,
                                           StringSlice module_name,
                                           StringSlice field_name,
                                           uint32_t table_index,
@@ -160,12 +158,11 @@ Result LoggingBinaryReader::OnImportTable(const State& state,
   sprint_limits(buf, sizeof(buf), elem_limits);
   LOGF("OnImportTable(import_index: %u, table_index: %u, elem_type: %s, %s)\n",
        import_index, table_index, get_type_name(elem_type), buf);
-  return reader->OnImportTable(state, import_index, module_name, field_name,
+  return reader->OnImportTable(import_index, module_name, field_name,
                                table_index, elem_type, elem_limits);
 }
 
-Result LoggingBinaryReader::OnImportMemory(const State& state,
-                                           uint32_t import_index,
+Result BinaryReaderLogging::OnImportMemory(uint32_t import_index,
                                            StringSlice module_name,
                                            StringSlice field_name,
                                            uint32_t memory_index,
@@ -174,12 +171,11 @@ Result LoggingBinaryReader::OnImportMemory(const State& state,
   sprint_limits(buf, sizeof(buf), page_limits);
   LOGF("OnImportMemory(import_index: %u, memory_index: %u, %s)\n", import_index,
        memory_index, buf);
-  return reader->OnImportMemory(state, import_index, module_name, field_name,
+  return reader->OnImportMemory(import_index, module_name, field_name,
                                 memory_index, page_limits);
 }
 
-Result LoggingBinaryReader::OnImportGlobal(const State& state,
-                                           uint32_t import_index,
+Result BinaryReaderLogging::OnImportGlobal(uint32_t import_index,
                                            StringSlice module_name,
                                            StringSlice field_name,
                                            uint32_t global_index,
@@ -190,41 +186,37 @@ Result LoggingBinaryReader::OnImportGlobal(const State& state,
       "%s)\n",
       import_index, global_index, get_type_name(type),
       mutable_ ? "true" : "false");
-  return reader->OnImportGlobal(state, import_index, module_name, field_name,
+  return reader->OnImportGlobal(import_index, module_name, field_name,
                                 global_index, type, mutable_);
 }
 
-Result LoggingBinaryReader::OnTable(const State& state,
-                                    uint32_t index,
+Result BinaryReaderLogging::OnTable(uint32_t index,
                                     Type elem_type,
                                     const Limits* elem_limits) {
   char buf[100];
   sprint_limits(buf, sizeof(buf), elem_limits);
   LOGF("OnTable(index: %u, elem_type: %s, %s)\n", index,
        get_type_name(elem_type), buf);
-  return reader->OnTable(state, index, elem_type, elem_limits);
+  return reader->OnTable(index, elem_type, elem_limits);
 }
 
-Result LoggingBinaryReader::OnMemory(const State& state,
-                                     uint32_t index,
+Result BinaryReaderLogging::OnMemory(uint32_t index,
                                      const Limits* page_limits) {
   char buf[100];
   sprint_limits(buf, sizeof(buf), page_limits);
   LOGF("OnMemory(index: %u, %s)\n", index, buf);
-  return reader->OnMemory(state, index, page_limits);
+  return reader->OnMemory(index, page_limits);
 }
 
-Result LoggingBinaryReader::BeginGlobal(const State& state,
-                                        uint32_t index,
+Result BinaryReaderLogging::BeginGlobal(uint32_t index,
                                         Type type,
                                         bool mutable_) {
   LOGF("BeginGlobal(index: %u, type: %s, mutable: %s)\n", index,
        get_type_name(type), mutable_ ? "true" : "false");
-  return reader->BeginGlobal(state, index, type, mutable_);
+  return reader->BeginGlobal(index, type, mutable_);
 }
 
-Result LoggingBinaryReader::OnExport(const State& state,
-                                     uint32_t index,
+Result BinaryReaderLogging::OnExport(uint32_t index,
                                      ExternalKind kind,
                                      uint32_t item_index,
                                      StringSlice name) {
@@ -232,39 +224,35 @@ Result LoggingBinaryReader::OnExport(const State& state,
        "\")\n",
        index, get_kind_name(kind), item_index,
        WABT_PRINTF_STRING_SLICE_ARG(name));
-  return reader->OnExport(state, index, kind, item_index, name);
+  return reader->OnExport(index, kind, item_index, name);
 }
 
-Result LoggingBinaryReader::OnLocalDecl(const State& state,
-                                        uint32_t decl_index,
+Result BinaryReaderLogging::OnLocalDecl(uint32_t decl_index,
                                         uint32_t count,
                                         Type type) {
   LOGF("OnLocalDecl(index: %u, count: %u, type: %s)\n", decl_index, count,
        get_type_name(type));
-  return reader->OnLocalDecl(state, decl_index, count, type);
+  return reader->OnLocalDecl(decl_index, count, type);
 }
 
-Result LoggingBinaryReader::OnBlockExpr(const State& state,
-                                        uint32_t num_types,
-                                        Type* sig_types) {
+Result BinaryReaderLogging::OnBlockExpr(uint32_t num_types, Type* sig_types) {
   LOGF("OnBlockExpr(sig: ");
   LogTypes(num_types, sig_types);
   LOGF_NOINDENT(")\n");
-  return reader->OnBlockExpr(state, num_types, sig_types);
+  return reader->OnBlockExpr(num_types, sig_types);
 }
 
-Result LoggingBinaryReader::OnBrExpr(const State& state, uint32_t depth) {
+Result BinaryReaderLogging::OnBrExpr(uint32_t depth) {
   LOGF("OnBrExpr(depth: %u)\n", depth);
-  return reader->OnBrExpr(state, depth);
+  return reader->OnBrExpr(depth);
 }
 
-Result LoggingBinaryReader::OnBrIfExpr(const State& state, uint32_t depth) {
+Result BinaryReaderLogging::OnBrIfExpr(uint32_t depth) {
   LOGF("OnBrIfExpr(depth: %u)\n", depth);
-  return reader->OnBrIfExpr(state, depth);
+  return reader->OnBrIfExpr(depth);
 }
 
-Result LoggingBinaryReader::OnBrTableExpr(const State& state,
-                                          uint32_t num_targets,
+Result BinaryReaderLogging::OnBrTableExpr(uint32_t num_targets,
                                           uint32_t* target_depths,
                                           uint32_t default_target_depth) {
   LOGF("OnBrTableExpr(num_targets: %u, depths: [", num_targets);
@@ -274,219 +262,196 @@ Result LoggingBinaryReader::OnBrTableExpr(const State& state,
       LOGF_NOINDENT(", ");
   }
   LOGF_NOINDENT("], default: %u)\n", default_target_depth);
-  return reader->OnBrTableExpr(state, num_targets, target_depths,
+  return reader->OnBrTableExpr(num_targets, target_depths,
                                default_target_depth);
 }
 
-Result LoggingBinaryReader::OnF32ConstExpr(const State& state,
-                                           uint32_t value_bits) {
+Result BinaryReaderLogging::OnF32ConstExpr(uint32_t value_bits) {
   float value;
   memcpy(&value, &value_bits, sizeof(value));
   LOGF("OnF32ConstExpr(%g (0x04%x))\n", value, value_bits);
-  return reader->OnF32ConstExpr(state, value_bits);
+  return reader->OnF32ConstExpr(value_bits);
 }
 
-Result LoggingBinaryReader::OnF64ConstExpr(const State& state,
-                                           uint64_t value_bits) {
+Result BinaryReaderLogging::OnF64ConstExpr(uint64_t value_bits) {
   double value;
   memcpy(&value, &value_bits, sizeof(value));
   LOGF("OnF64ConstExpr(%g (0x08%" PRIx64 "))\n", value, value_bits);
-  return reader->OnF64ConstExpr(state, value_bits);
+  return reader->OnF64ConstExpr(value_bits);
 }
 
-Result LoggingBinaryReader::OnI32ConstExpr(const State& state, uint32_t value) {
+Result BinaryReaderLogging::OnI32ConstExpr(uint32_t value) {
   LOGF("OnI32ConstExpr(%u (0x%x))\n", value, value);
-  return reader->OnI32ConstExpr(state, value);
+  return reader->OnI32ConstExpr(value);
 }
 
-Result LoggingBinaryReader::OnI64ConstExpr(const State& state, uint64_t value) {
+Result BinaryReaderLogging::OnI64ConstExpr(uint64_t value) {
   LOGF("OnI64ConstExpr(%" PRIu64 " (0x%" PRIx64 "))\n", value, value);
-  return reader->OnI64ConstExpr(state, value);
+  return reader->OnI64ConstExpr(value);
 }
 
-Result LoggingBinaryReader::OnIfExpr(const State& state,
-                                     uint32_t num_types,
-                                     Type* sig_types) {
+Result BinaryReaderLogging::OnIfExpr(uint32_t num_types, Type* sig_types) {
   LOGF("OnIfExpr(sig: ");
   LogTypes(num_types, sig_types);
   LOGF_NOINDENT(")\n");
-  return reader->OnIfExpr(state, num_types, sig_types);
+  return reader->OnIfExpr(num_types, sig_types);
 }
 
-Result LoggingBinaryReader::OnLoadExpr(const State& state,
-                                       Opcode opcode,
+Result BinaryReaderLogging::OnLoadExpr(Opcode opcode,
                                        uint32_t alignment_log2,
                                        uint32_t offset) {
   LOGF("OnLoadExpr(opcode: \"%s\" (%u), align log2: %u, offset: %u)\n",
        get_opcode_name(opcode), static_cast<unsigned>(opcode), alignment_log2,
        offset);
-  return reader->OnLoadExpr(state, opcode, alignment_log2, offset);
+  return reader->OnLoadExpr(opcode, alignment_log2, offset);
 }
 
-Result LoggingBinaryReader::OnLoopExpr(const State& state,
-                                       uint32_t num_types,
-                                       Type* sig_types) {
+Result BinaryReaderLogging::OnLoopExpr(uint32_t num_types, Type* sig_types) {
   LOGF("OnLoopExpr(sig: ");
   LogTypes(num_types, sig_types);
   LOGF_NOINDENT(")\n");
-  return reader->OnLoopExpr(state, num_types, sig_types);
+  return reader->OnLoopExpr(num_types, sig_types);
 }
 
-Result LoggingBinaryReader::OnStoreExpr(const State& state,
-                                        Opcode opcode,
+Result BinaryReaderLogging::OnStoreExpr(Opcode opcode,
                                         uint32_t alignment_log2,
                                         uint32_t offset) {
   LOGF("OnStoreExpr(opcode: \"%s\" (%u), align log2: %u, offset: %u)\n",
        get_opcode_name(opcode), static_cast<unsigned>(opcode), alignment_log2,
        offset);
-  return reader->OnStoreExpr(state, opcode, alignment_log2, offset);
+  return reader->OnStoreExpr(opcode, alignment_log2, offset);
 }
 
-Result LoggingBinaryReader::OnDataSegmentData(const State& state,
-                                              uint32_t index,
+Result BinaryReaderLogging::OnDataSegmentData(uint32_t index,
                                               const void* data,
                                               uint32_t size) {
   LOGF("OnDataSegmentData(index:%u, size:%u)\n", index, size);
-  return reader->OnDataSegmentData(state, index, data, size);
+  return reader->OnDataSegmentData(index, data, size);
 }
 
-Result LoggingBinaryReader::OnFunctionNameSubsection(const State& state,
-                                                     uint32_t index,
+Result BinaryReaderLogging::OnFunctionNameSubsection(uint32_t index,
                                                      uint32_t name_type,
                                                      uint32_t subsection_size) {
   LOGF("OnFunctionNameSubsection(index:%u, nametype:%u, size:%u)\n", index,
        name_type, subsection_size);
-  return reader->OnFunctionNameSubsection(state, index, name_type,
-                                          subsection_size);
+  return reader->OnFunctionNameSubsection(index, name_type, subsection_size);
 }
 
-Result LoggingBinaryReader::OnFunctionName(const State& state,
-                                           uint32_t index,
-                                           StringSlice name) {
+Result BinaryReaderLogging::OnFunctionName(uint32_t index, StringSlice name) {
   LOGF("OnFunctionName(index: %u, name: \"" PRIstringslice "\")\n", index,
        WABT_PRINTF_STRING_SLICE_ARG(name));
-  return reader->OnFunctionName(state, index, name);
+  return reader->OnFunctionName(index, name);
 }
 
-Result LoggingBinaryReader::OnLocalNameSubsection(const State& state,
-                                                  uint32_t index,
+Result BinaryReaderLogging::OnLocalNameSubsection(uint32_t index,
                                                   uint32_t name_type,
                                                   uint32_t subsection_size) {
   LOGF("OnLocalNameSubsection(index:%u, nametype:%u, size:%u)\n", index,
        name_type, subsection_size);
-  return reader->OnLocalNameSubsection(state, index, name_type,
-                                       subsection_size);
+  return reader->OnLocalNameSubsection(index, name_type, subsection_size);
 }
 
-Result LoggingBinaryReader::OnLocalName(const State& state,
-                                        uint32_t func_index,
+Result BinaryReaderLogging::OnLocalName(uint32_t func_index,
                                         uint32_t local_index,
                                         StringSlice name) {
   LOGF("OnLocalName(func_index: %u, local_index: %u, name: \"" PRIstringslice
        "\")\n",
        func_index, local_index, WABT_PRINTF_STRING_SLICE_ARG(name));
-  return reader->OnLocalName(state, func_index, local_index, name);
+  return reader->OnLocalName(func_index, local_index, name);
 }
 
-Result LoggingBinaryReader::OnInitExprF32ConstExpr(const State& state,
-                                                   uint32_t index,
+Result BinaryReaderLogging::OnInitExprF32ConstExpr(uint32_t index,
                                                    uint32_t value_bits) {
   float value;
   memcpy(&value, &value_bits, sizeof(value));
   LOGF("OnInitExprF32ConstExpr(index: %u, value: %g (0x04%x))\n", index, value,
        value_bits);
-  return reader->OnInitExprF32ConstExpr(state, index, value_bits);
+  return reader->OnInitExprF32ConstExpr(index, value_bits);
 }
 
-Result LoggingBinaryReader::OnInitExprF64ConstExpr(const State& state,
-                                                   uint32_t index,
+Result BinaryReaderLogging::OnInitExprF64ConstExpr(uint32_t index,
                                                    uint64_t value_bits) {
   double value;
   memcpy(&value, &value_bits, sizeof(value));
   LOGF("OnInitExprF64ConstExpr(index: %u value: %g (0x08%" PRIx64 "))\n", index,
        value, value_bits);
-  return reader->OnInitExprF64ConstExpr(state, index, value_bits);
+  return reader->OnInitExprF64ConstExpr(index, value_bits);
 }
 
-Result LoggingBinaryReader::OnInitExprI32ConstExpr(const State& state,
-                                                   uint32_t index,
+Result BinaryReaderLogging::OnInitExprI32ConstExpr(uint32_t index,
                                                    uint32_t value) {
   LOGF("OnInitExprI32ConstExpr(index: %u, value: %u)\n", index, value);
-  return reader->OnInitExprI32ConstExpr(state, index, value);
+  return reader->OnInitExprI32ConstExpr(index, value);
 }
 
-Result LoggingBinaryReader::OnInitExprI64ConstExpr(const State& state,
-                                                   uint32_t index,
+Result BinaryReaderLogging::OnInitExprI64ConstExpr(uint32_t index,
                                                    uint64_t value) {
   LOGF("OnInitExprI64ConstExpr(index: %u, value: %" PRIu64 ")\n", index, value);
-  return reader->OnInitExprI64ConstExpr(state, index, value);
+  return reader->OnInitExprI64ConstExpr(index, value);
 }
 
-Result LoggingBinaryReader::OnRelocCount(const State& state,
-                                         uint32_t count,
+Result BinaryReaderLogging::OnRelocCount(uint32_t count,
                                          BinarySection section_code,
                                          StringSlice section_name) {
   LOGF("OnRelocCount(count: %d, section: %s, section_name: " PRIstringslice
        ")\n",
        count, get_section_name(section_code),
        WABT_PRINTF_STRING_SLICE_ARG(section_name));
-  return reader->OnRelocCount(state, count, section_code, section_name);
+  return reader->OnRelocCount(count, section_code, section_name);
 }
 
-Result LoggingBinaryReader::OnReloc(const State& state,
-                                    RelocType type,
+Result BinaryReaderLogging::OnReloc(RelocType type,
                                     uint32_t offset,
                                     uint32_t index,
                                     int32_t addend) {
   LOGF("OnReloc(type: %s, offset: %u, index: %u, addend: %d)\n",
        get_reloc_type_name(type), offset, index, addend);
-  return reader->OnReloc(state, type, offset, index, addend);
+  return reader->OnReloc(type, offset, index, addend);
 }
 
-#define DEFINE_BEGIN(name)                                              \
-  Result LoggingBinaryReader::name(const State& state, uint32_t size) { \
-    LOGF(#name "(%u)\n", size);                                         \
-    Indent();                                                           \
-    return reader->name(state, size);                                   \
+#define DEFINE_BEGIN(name)                          \
+  Result BinaryReaderLogging::name(uint32_t size) { \
+    LOGF(#name "(%u)\n", size);                     \
+    Indent();                                       \
+    return reader->name(size);                      \
   }
 
-#define DEFINE_END(name)                                 \
-  Result LoggingBinaryReader::name(const State& state) { \
-    Dedent();                                            \
-    LOGF(#name "\n");                                    \
-    return reader->name(state);                          \
+#define DEFINE_END(name)               \
+  Result BinaryReaderLogging::name() { \
+    Dedent();                          \
+    LOGF(#name "\n");                  \
+    return reader->name();             \
   }
 
-#define DEFINE_UINT32(name)                                              \
-  Result LoggingBinaryReader::name(const State& state, uint32_t value) { \
-    LOGF(#name "(%u)\n", value);                                         \
-    return reader->name(state, value);                                   \
+#define DEFINE_UINT32(name)                          \
+  Result BinaryReaderLogging::name(uint32_t value) { \
+    LOGF(#name "(%u)\n", value);                     \
+    return reader->name(value);                      \
   }
 
-#define DEFINE_UINT32_DESC(name, desc)                                   \
-  Result LoggingBinaryReader::name(const State& state, uint32_t value) { \
-    LOGF(#name "(" desc ": %u)\n", value);                               \
-    return reader->name(state, value);                                   \
+#define DEFINE_UINT32_DESC(name, desc)               \
+  Result BinaryReaderLogging::name(uint32_t value) { \
+    LOGF(#name "(" desc ": %u)\n", value);           \
+    return reader->name(value);                      \
   }
 
-#define DEFINE_UINT32_UINT32(name, desc0, desc1)                        \
-  Result LoggingBinaryReader::name(const State& state, uint32_t value0, \
-                                   uint32_t value1) {                   \
-    LOGF(#name "(" desc0 ": %u, " desc1 ": %u)\n", value0, value1);     \
-    return reader->name(state, value0, value1);                         \
+#define DEFINE_UINT32_UINT32(name, desc0, desc1)                       \
+  Result BinaryReaderLogging::name(uint32_t value0, uint32_t value1) { \
+    LOGF(#name "(" desc0 ": %u, " desc1 ": %u)\n", value0, value1);    \
+    return reader->name(value0, value1);                               \
   }
 
-#define DEFINE_OPCODE(name)                                             \
-  Result LoggingBinaryReader::name(const State& state, Opcode opcode) { \
-    LOGF(#name "(\"%s\" (%u))\n", get_opcode_name(opcode),              \
-         static_cast<unsigned>(opcode));                                \
-    return reader->name(state, opcode);                                 \
+#define DEFINE_OPCODE(name)                                \
+  Result BinaryReaderLogging::name(Opcode opcode) {        \
+    LOGF(#name "(\"%s\" (%u))\n", get_opcode_name(opcode), \
+         static_cast<unsigned>(opcode));                   \
+    return reader->name(opcode);                           \
   }
 
-#define DEFINE0(name)                                    \
-  Result LoggingBinaryReader::name(const State& state) { \
-    LOGF(#name "\n");                                    \
-    return reader->name(state);                          \
+#define DEFINE0(name)                  \
+  Result BinaryReaderLogging::name() { \
+    LOGF(#name "\n");                  \
+    return reader->name();             \
   }
 
 DEFINE_END(EndModule)
@@ -586,44 +551,42 @@ DEFINE_UINT32_UINT32(OnInitExprGetGlobalExpr, "index", "global_index")
 
 // We don't need to log these (the individual opcodes are logged instead), but
 // we still need to forward the calls.
-Result LoggingBinaryReader::OnOpcode(const State& state, Opcode opcode) {
-  return reader->OnOpcode(state, opcode);
+Result BinaryReaderLogging::OnOpcode(Opcode opcode) {
+  return reader->OnOpcode(opcode);
 }
 
-Result LoggingBinaryReader::OnOpcodeBare(const State& state) {
-  return reader->OnOpcodeBare(state);
+Result BinaryReaderLogging::OnOpcodeBare() {
+  return reader->OnOpcodeBare();
 }
 
-Result LoggingBinaryReader::OnOpcodeUint32(const State& state, uint32_t value) {
-  return reader->OnOpcodeUint32(state, value);
+Result BinaryReaderLogging::OnOpcodeUint32(uint32_t value) {
+  return reader->OnOpcodeUint32(value);
 }
 
-Result LoggingBinaryReader::OnOpcodeUint32Uint32(const State& state,
-                                                 uint32_t value,
+Result BinaryReaderLogging::OnOpcodeUint32Uint32(uint32_t value,
                                                  uint32_t value2) {
-  return reader->OnOpcodeUint32Uint32(state, value, value2);
+  return reader->OnOpcodeUint32Uint32(value, value2);
 }
 
-Result LoggingBinaryReader::OnOpcodeUint64(const State& state, uint64_t value) {
-  return reader->OnOpcodeUint64(state, value);
+Result BinaryReaderLogging::OnOpcodeUint64(uint64_t value) {
+  return reader->OnOpcodeUint64(value);
 }
 
-Result LoggingBinaryReader::OnOpcodeF32(const State& state, uint32_t value) {
-  return reader->OnOpcodeF32(state, value);
+Result BinaryReaderLogging::OnOpcodeF32(uint32_t value) {
+  return reader->OnOpcodeF32(value);
 }
 
-Result LoggingBinaryReader::OnOpcodeF64(const State& state, uint64_t value) {
-  return reader->OnOpcodeF64(state, value);
+Result BinaryReaderLogging::OnOpcodeF64(uint64_t value) {
+  return reader->OnOpcodeF64(value);
 }
 
-Result LoggingBinaryReader::OnOpcodeBlockSig(const State& state,
-                                             uint32_t num_types,
+Result BinaryReaderLogging::OnOpcodeBlockSig(uint32_t num_types,
                                              Type* sig_types) {
-  return reader->OnOpcodeBlockSig(state, num_types, sig_types);
+  return reader->OnOpcodeBlockSig(num_types, sig_types);
 }
 
-Result LoggingBinaryReader::OnEndFunc(const State& state) {
-  return reader->OnEndFunc(state);
+Result BinaryReaderLogging::OnEndFunc() {
+  return reader->OnEndFunc();
 }
 
 }  // namespace wabt

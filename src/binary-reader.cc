@@ -27,8 +27,8 @@
 #include <vector>
 
 #include "binary.h"
+#include "binary-reader-logging.h"
 #include "config.h"
-#include "logging-binary-reader.h"
 #include "stream.h"
 
 #if HAVE_ALLOCA
@@ -39,14 +39,13 @@ namespace wabt {
 
 namespace {
 
-#define CALLBACK0(member)                                             \
-  RAISE_ERROR_UNLESS(WABT_SUCCEEDED(ctx->reader->member(ctx->state)), \
+#define CALLBACK0(member)                                   \
+  RAISE_ERROR_UNLESS(WABT_SUCCEEDED(ctx->reader->member()), \
                      #member " callback failed")
 
-#define CALLBACK(member, ...)                                       \
-  RAISE_ERROR_UNLESS(                                               \
-      WABT_SUCCEEDED(ctx->reader->member(ctx->state, __VA_ARGS__)), \
-      #member " callback failed")
+#define CALLBACK(member, ...)                                          \
+  RAISE_ERROR_UNLESS(WABT_SUCCEEDED(ctx->reader->member(__VA_ARGS__)), \
+                     #member " callback failed")
 
 #define RAISE_ERROR(...) raise_error(ctx, __VA_ARGS__)
 
@@ -82,7 +81,7 @@ struct Context {
 static void WABT_PRINTF_FORMAT(2, 3)
     raise_error(Context* ctx, const char* format, ...) {
   WABT_SNPRINTF_ALLOCA(buffer, length, format);
-  bool handled = ctx->reader->OnError(ctx->state, buffer);
+  bool handled = ctx->reader->OnError(buffer);
 
   if (!handled) {
     /* Not great to just print, but we don't want to eat the error either. */
@@ -1371,7 +1370,7 @@ Result read_binary(const void* data,
                    size_t size,
                    BinaryReader* reader,
                    const ReadBinaryOptions* options) {
-  LoggingBinaryReader logging_reader(options->log_stream, reader);
+  BinaryReaderLogging logging_reader(options->log_stream, reader);
   Context context;
   /* all the macros assume a Context* named ctx */
   Context* ctx = &context;
@@ -1385,6 +1384,8 @@ Result read_binary(const void* data,
   if (setjmp(ctx->error_jmp_buf) == 1) {
     return Result::Error;
   }
+
+  ctx->reader->OnSetState(&ctx->state);
 
   uint32_t magic;
   in_u32(ctx, &magic, "magic");

@@ -80,150 +80,121 @@ class BinaryReaderInterpreter : public BinaryReaderNop {
   size_t get_istream_offset() { return istream_offset; }
 
   // Implement BinaryReader.
-  virtual bool OnError(const State&, const char* message);
+  virtual bool OnError(const char* message);
 
-  virtual Result EndModule(const State&);
+  virtual Result EndModule();
 
-  virtual Result OnTypeCount(const State&, uint32_t count);
-  virtual Result OnType(const State&,
-                        uint32_t index,
+  virtual Result OnTypeCount(uint32_t count);
+  virtual Result OnType(uint32_t index,
                         uint32_t param_count,
                         Type* param_types,
                         uint32_t result_count,
                         Type* result_types);
 
-  virtual Result OnImportCount(const State&, uint32_t count);
-  virtual Result OnImport(const State&,
-                          uint32_t index,
+  virtual Result OnImportCount(uint32_t count);
+  virtual Result OnImport(uint32_t index,
                           StringSlice module_name,
                           StringSlice field_name);
-  virtual Result OnImportFunc(const State&,
-                              uint32_t import_index,
+  virtual Result OnImportFunc(uint32_t import_index,
                               StringSlice module_name,
                               StringSlice field_name,
                               uint32_t func_index,
                               uint32_t sig_index);
-  virtual Result OnImportTable(const State&,
-                               uint32_t import_index,
+  virtual Result OnImportTable(uint32_t import_index,
                                StringSlice module_name,
                                StringSlice field_name,
                                uint32_t table_index,
                                Type elem_type,
                                const Limits* elem_limits);
-  virtual Result OnImportMemory(const State&,
-                                uint32_t import_index,
+  virtual Result OnImportMemory(uint32_t import_index,
                                 StringSlice module_name,
                                 StringSlice field_name,
                                 uint32_t memory_index,
                                 const Limits* page_limits);
-  virtual Result OnImportGlobal(const State&,
-                                uint32_t import_index,
+  virtual Result OnImportGlobal(uint32_t import_index,
                                 StringSlice module_name,
                                 StringSlice field_name,
                                 uint32_t global_index,
                                 Type type,
                                 bool mutable_);
 
-  virtual Result OnFunctionCount(const State&, uint32_t count);
-  virtual Result OnFunction(const State&, uint32_t index, uint32_t sig_index);
+  virtual Result OnFunctionCount(uint32_t count);
+  virtual Result OnFunction(uint32_t index, uint32_t sig_index);
 
-  virtual Result OnTable(const State&,
-                         uint32_t index,
+  virtual Result OnTable(uint32_t index,
                          Type elem_type,
                          const Limits* elem_limits);
 
-  virtual Result OnMemory(const State&, uint32_t index, const Limits* limits);
+  virtual Result OnMemory(uint32_t index, const Limits* limits);
 
-  virtual Result OnGlobalCount(const State&, uint32_t count);
-  virtual Result BeginGlobal(const State&,
-                             uint32_t index,
-                             Type type,
-                             bool mutable_);
-  virtual Result EndGlobalInitExpr(const State&, uint32_t index);
+  virtual Result OnGlobalCount(uint32_t count);
+  virtual Result BeginGlobal(uint32_t index, Type type, bool mutable_);
+  virtual Result EndGlobalInitExpr(uint32_t index);
 
-  virtual Result OnExport(const State&,
-                          uint32_t index,
+  virtual Result OnExport(uint32_t index,
                           ExternalKind kind,
                           uint32_t item_index,
                           StringSlice name);
 
-  virtual Result OnStartFunction(const State&, uint32_t func_index);
+  virtual Result OnStartFunction(uint32_t func_index);
 
-  virtual Result BeginFunctionBody(const State&, uint32_t index);
-  virtual Result OnLocalDeclCount(const State&, uint32_t count);
-  virtual Result OnLocalDecl(const State&,
-                             uint32_t decl_index,
-                             uint32_t count,
-                             Type type);
+  virtual Result BeginFunctionBody(uint32_t index);
+  virtual Result OnLocalDeclCount(uint32_t count);
+  virtual Result OnLocalDecl(uint32_t decl_index, uint32_t count, Type type);
 
-  virtual Result OnBinaryExpr(const State&, Opcode opcode);
-  virtual Result OnBlockExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnBrExpr(const State&, uint32_t depth);
-  virtual Result OnBrIfExpr(const State&, uint32_t depth);
-  virtual Result OnBrTableExpr(const State&,
-                               uint32_t num_targets,
+  virtual Result OnBinaryExpr(Opcode opcode);
+  virtual Result OnBlockExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnBrExpr(uint32_t depth);
+  virtual Result OnBrIfExpr(uint32_t depth);
+  virtual Result OnBrTableExpr(uint32_t num_targets,
                                uint32_t* target_depths,
                                uint32_t default_target_depth);
-  virtual Result OnCallExpr(const State&, uint32_t func_index);
-  virtual Result OnCallIndirectExpr(const State&, uint32_t sig_index);
-  virtual Result OnCompareExpr(const State&, Opcode opcode);
-  virtual Result OnConvertExpr(const State&, Opcode opcode);
-  virtual Result OnCurrentMemoryExpr(const State&);
-  virtual Result OnDropExpr(const State&);
-  virtual Result OnElseExpr(const State&);
-  virtual Result OnEndExpr(const State&);
-  virtual Result OnF32ConstExpr(const State&, uint32_t value_bits);
-  virtual Result OnF64ConstExpr(const State&, uint64_t value_bits);
-  virtual Result OnGetGlobalExpr(const State&, uint32_t global_index);
-  virtual Result OnGetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnGrowMemoryExpr(const State&);
-  virtual Result OnI32ConstExpr(const State&, uint32_t value);
-  virtual Result OnI64ConstExpr(const State&, uint64_t value);
-  virtual Result OnIfExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnLoadExpr(const State&,
-                            Opcode opcode,
+  virtual Result OnCallExpr(uint32_t func_index);
+  virtual Result OnCallIndirectExpr(uint32_t sig_index);
+  virtual Result OnCompareExpr(Opcode opcode);
+  virtual Result OnConvertExpr(Opcode opcode);
+  virtual Result OnCurrentMemoryExpr();
+  virtual Result OnDropExpr();
+  virtual Result OnElseExpr();
+  virtual Result OnEndExpr();
+  virtual Result OnF32ConstExpr(uint32_t value_bits);
+  virtual Result OnF64ConstExpr(uint64_t value_bits);
+  virtual Result OnGetGlobalExpr(uint32_t global_index);
+  virtual Result OnGetLocalExpr(uint32_t local_index);
+  virtual Result OnGrowMemoryExpr();
+  virtual Result OnI32ConstExpr(uint32_t value);
+  virtual Result OnI64ConstExpr(uint64_t value);
+  virtual Result OnIfExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnLoadExpr(Opcode opcode,
                             uint32_t alignment_log2,
                             uint32_t offset);
-  virtual Result OnLoopExpr(const State&, uint32_t num_types, Type* sig_types);
-  virtual Result OnNopExpr(const State&);
-  virtual Result OnReturnExpr(const State&);
-  virtual Result OnSelectExpr(const State&);
-  virtual Result OnSetGlobalExpr(const State&, uint32_t global_index);
-  virtual Result OnSetLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnStoreExpr(const State&,
-                             Opcode opcode,
+  virtual Result OnLoopExpr(uint32_t num_types, Type* sig_types);
+  virtual Result OnNopExpr();
+  virtual Result OnReturnExpr();
+  virtual Result OnSelectExpr();
+  virtual Result OnSetGlobalExpr(uint32_t global_index);
+  virtual Result OnSetLocalExpr(uint32_t local_index);
+  virtual Result OnStoreExpr(Opcode opcode,
                              uint32_t alignment_log2,
                              uint32_t offset);
-  virtual Result OnTeeLocalExpr(const State&, uint32_t local_index);
-  virtual Result OnUnaryExpr(const State&, Opcode opcode);
-  virtual Result OnUnreachableExpr(const State&);
-  virtual Result EndFunctionBody(const State&, uint32_t index);
+  virtual Result OnTeeLocalExpr(uint32_t local_index);
+  virtual Result OnUnaryExpr(Opcode opcode);
+  virtual Result OnUnreachableExpr();
+  virtual Result EndFunctionBody(uint32_t index);
 
-  virtual Result EndElemSegmentInitExpr(const State&, uint32_t index);
-  virtual Result OnElemSegmentFunctionIndex(const State&,
-                                            uint32_t index,
+  virtual Result EndElemSegmentInitExpr(uint32_t index);
+  virtual Result OnElemSegmentFunctionIndex(uint32_t index,
                                             uint32_t func_index);
 
-  virtual Result OnDataSegmentData(const State&,
-                                   uint32_t index,
+  virtual Result OnDataSegmentData(uint32_t index,
                                    const void* data,
                                    uint32_t size);
 
-  virtual Result OnInitExprF32ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint32_t value);
-  virtual Result OnInitExprF64ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint64_t value);
-  virtual Result OnInitExprGetGlobalExpr(const State&,
-                                         uint32_t index,
-                                         uint32_t global_index);
-  virtual Result OnInitExprI32ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint32_t value);
-  virtual Result OnInitExprI64ConstExpr(const State&,
-                                        uint32_t index,
-                                        uint64_t value);
+  virtual Result OnInitExprF32ConstExpr(uint32_t index, uint32_t value);
+  virtual Result OnInitExprF64ConstExpr(uint32_t index, uint64_t value);
+  virtual Result OnInitExprGetGlobalExpr(uint32_t index, uint32_t global_index);
+  virtual Result OnInitExprI32ConstExpr(uint32_t index, uint32_t value);
+  virtual Result OnInitExprI64ConstExpr(uint32_t index, uint64_t value);
 
  private:
   Label* GetLabel(uint32_t depth);
@@ -584,12 +555,11 @@ Result BinaryReaderInterpreter::EmitFuncOffset(DefinedInterpreterFunc* func,
   return Result::Ok;
 }
 
-bool BinaryReaderInterpreter::OnError(const State& state, const char* message) {
-  return HandleError(state.offset, message);
+bool BinaryReaderInterpreter::OnError(const char* message) {
+  return HandleError(state->offset, message);
 }
 
-Result BinaryReaderInterpreter::OnTypeCount(const State& state,
-                                            uint32_t count) {
+Result BinaryReaderInterpreter::OnTypeCount(uint32_t count) {
   sig_index_mapping.resize(count);
   for (uint32_t i = 0; i < count; ++i)
     sig_index_mapping[i] = env->sigs.size() + i;
@@ -597,8 +567,7 @@ Result BinaryReaderInterpreter::OnTypeCount(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnType(const State& state,
-                                       uint32_t index,
+Result BinaryReaderInterpreter::OnType(uint32_t index,
                                        uint32_t param_count,
                                        Type* param_types,
                                        uint32_t result_count,
@@ -611,14 +580,12 @@ Result BinaryReaderInterpreter::OnType(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnImportCount(const State& state,
-                                              uint32_t count) {
+Result BinaryReaderInterpreter::OnImportCount(uint32_t count) {
   module->imports.resize(count);
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnImport(const State& state,
-                                         uint32_t index,
+Result BinaryReaderInterpreter::OnImport(uint32_t index,
                                          StringSlice module_name,
                                          StringSlice field_name) {
   InterpreterImport* import = &module->imports[index];
@@ -742,8 +709,7 @@ PrintErrorCallback BinaryReaderInterpreter::MakePrintErrorCallback() {
   return result;
 }
 
-Result BinaryReaderInterpreter::OnImportFunc(const State& state,
-                                             uint32_t import_index,
+Result BinaryReaderInterpreter::OnImportFunc(uint32_t import_index,
                                              StringSlice module_name,
                                              StringSlice field_name,
                                              uint32_t func_index,
@@ -784,8 +750,7 @@ Result BinaryReaderInterpreter::OnImportFunc(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnImportTable(const State& state,
-                                              uint32_t import_index,
+Result BinaryReaderInterpreter::OnImportTable(uint32_t import_index,
                                               StringSlice module_name,
                                               StringSlice field_name,
                                               uint32_t table_index,
@@ -823,8 +788,7 @@ Result BinaryReaderInterpreter::OnImportTable(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnImportMemory(const State& state,
-                                               uint32_t import_index,
+Result BinaryReaderInterpreter::OnImportMemory(uint32_t import_index,
                                                StringSlice module_name,
                                                StringSlice field_name,
                                                uint32_t memory_index,
@@ -861,8 +825,7 @@ Result BinaryReaderInterpreter::OnImportMemory(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnImportGlobal(const State& state,
-                                               uint32_t import_index,
+Result BinaryReaderInterpreter::OnImportGlobal(uint32_t import_index,
                                                StringSlice module_name,
                                                StringSlice field_name,
                                                uint32_t global_index,
@@ -895,8 +858,7 @@ Result BinaryReaderInterpreter::OnImportGlobal(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnFunctionCount(const State& state,
-                                                uint32_t count) {
+Result BinaryReaderInterpreter::OnFunctionCount(uint32_t count) {
   for (uint32_t i = 0; i < count; ++i)
     func_index_mapping.push_back(env->funcs.size() + i);
   env->funcs.reserve(env->funcs.size() + count);
@@ -904,17 +866,14 @@ Result BinaryReaderInterpreter::OnFunctionCount(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnFunction(const State& state,
-                                           uint32_t index,
-                                           uint32_t sig_index) {
+Result BinaryReaderInterpreter::OnFunction(uint32_t index, uint32_t sig_index) {
   DefinedInterpreterFunc* func =
       new DefinedInterpreterFunc(TranslateSigIndexToEnv(sig_index));
   env->funcs.emplace_back(func);
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnTable(const State& state,
-                                        uint32_t index,
+Result BinaryReaderInterpreter::OnTable(uint32_t index,
                                         Type elem_type,
                                         const Limits* elem_limits) {
   if (module->table_index != WABT_INVALID_INDEX) {
@@ -926,8 +885,7 @@ Result BinaryReaderInterpreter::OnTable(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnMemory(const State& state,
-                                         uint32_t index,
+Result BinaryReaderInterpreter::OnMemory(uint32_t index,
                                          const Limits* page_limits) {
   if (module->memory_index != WABT_INVALID_INDEX) {
     PrintError("only one memory allowed");
@@ -938,16 +896,14 @@ Result BinaryReaderInterpreter::OnMemory(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnGlobalCount(const State& state,
-                                              uint32_t count) {
+Result BinaryReaderInterpreter::OnGlobalCount(uint32_t count) {
   for (uint32_t i = 0; i < count; ++i)
     global_index_mapping.push_back(env->globals.size() + i);
   env->globals.resize(env->globals.size() + count);
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::BeginGlobal(const State& state,
-                                            uint32_t index,
+Result BinaryReaderInterpreter::BeginGlobal(uint32_t index,
                                             Type type,
                                             bool mutable_) {
   InterpreterGlobal* global = GetGlobalByModuleIndex(index);
@@ -956,8 +912,7 @@ Result BinaryReaderInterpreter::BeginGlobal(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::EndGlobalInitExpr(const State& state,
-                                                  uint32_t index) {
+Result BinaryReaderInterpreter::EndGlobalInitExpr(uint32_t index) {
   InterpreterGlobal* global = GetGlobalByModuleIndex(index);
   if (init_expr_value.type != global->typed_value.type) {
     PrintError("type mismatch in global, expected %s but got %s.",
@@ -969,24 +924,21 @@ Result BinaryReaderInterpreter::EndGlobalInitExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnInitExprF32ConstExpr(const State& state,
-                                                       uint32_t index,
+Result BinaryReaderInterpreter::OnInitExprF32ConstExpr(uint32_t index,
                                                        uint32_t value_bits) {
   init_expr_value.type = Type::F32;
   init_expr_value.value.f32_bits = value_bits;
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnInitExprF64ConstExpr(const State& state,
-                                                       uint32_t index,
+Result BinaryReaderInterpreter::OnInitExprF64ConstExpr(uint32_t index,
                                                        uint64_t value_bits) {
   init_expr_value.type = Type::F64;
   init_expr_value.value.f64_bits = value_bits;
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnInitExprGetGlobalExpr(const State& state,
-                                                        uint32_t index,
+Result BinaryReaderInterpreter::OnInitExprGetGlobalExpr(uint32_t index,
                                                         uint32_t global_index) {
   if (global_index >= num_global_imports) {
     PrintError("initializer expression can only reference an imported global");
@@ -1001,24 +953,21 @@ Result BinaryReaderInterpreter::OnInitExprGetGlobalExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnInitExprI32ConstExpr(const State& state,
-                                                       uint32_t index,
+Result BinaryReaderInterpreter::OnInitExprI32ConstExpr(uint32_t index,
                                                        uint32_t value) {
   init_expr_value.type = Type::I32;
   init_expr_value.value.i32 = value;
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnInitExprI64ConstExpr(const State& state,
-                                                       uint32_t index,
+Result BinaryReaderInterpreter::OnInitExprI64ConstExpr(uint32_t index,
                                                        uint64_t value) {
   init_expr_value.type = Type::I64;
   init_expr_value.value.i64 = value;
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnExport(const State& state,
-                                         uint32_t index,
+Result BinaryReaderInterpreter::OnExport(uint32_t index,
                                          ExternalKind kind,
                                          uint32_t item_index,
                                          StringSlice name) {
@@ -1048,8 +997,7 @@ Result BinaryReaderInterpreter::OnExport(const State& state,
   return AppendExport(module, kind, item_index, name);
 }
 
-Result BinaryReaderInterpreter::OnStartFunction(const State& state,
-                                                uint32_t func_index) {
+Result BinaryReaderInterpreter::OnStartFunction(uint32_t func_index) {
   uint32_t start_func_index = TranslateFuncIndexToEnv(func_index);
   InterpreterFunc* start_func = GetFuncByEnvIndex(start_func_index);
   InterpreterFuncSignature* sig = GetSignatureByEnvIndex(start_func->sig_index);
@@ -1065,8 +1013,7 @@ Result BinaryReaderInterpreter::OnStartFunction(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::EndElemSegmentInitExpr(const State& state,
-                                                       uint32_t index) {
+Result BinaryReaderInterpreter::EndElemSegmentInitExpr(uint32_t index) {
   if (init_expr_value.type != Type::I32) {
     PrintError("type mismatch in elem segment, expected i32 but got %s",
                get_type_name(init_expr_value.type));
@@ -1077,7 +1024,7 @@ Result BinaryReaderInterpreter::EndElemSegmentInitExpr(const State& state,
 }
 
 Result BinaryReaderInterpreter::OnElemSegmentFunctionIndex(
-    const State& state,
+
     uint32_t index,
     uint32_t func_index) {
   assert(module->table_index != WABT_INVALID_INDEX);
@@ -1099,8 +1046,7 @@ Result BinaryReaderInterpreter::OnElemSegmentFunctionIndex(
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnDataSegmentData(const State& state,
-                                                  uint32_t index,
+Result BinaryReaderInterpreter::OnDataSegmentData(uint32_t index,
                                                   const void* src_data,
                                                   uint32_t size) {
   assert(module->memory_index != WABT_INVALID_INDEX);
@@ -1141,8 +1087,7 @@ void BinaryReaderInterpreter::PopLabel() {
   }
 }
 
-Result BinaryReaderInterpreter::BeginFunctionBody(const State& state,
-                                                  uint32_t index) {
+Result BinaryReaderInterpreter::BeginFunctionBody(uint32_t index) {
   DefinedInterpreterFunc* func = GetFuncByModuleIndex(index)->as_defined();
   InterpreterFuncSignature* sig = GetSignatureByEnvIndex(func->sig_index);
 
@@ -1171,8 +1116,7 @@ Result BinaryReaderInterpreter::BeginFunctionBody(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::EndFunctionBody(const State& state,
-                                                uint32_t index) {
+Result BinaryReaderInterpreter::EndFunctionBody(uint32_t index) {
   FixupTopLabel();
   uint32_t drop_count, keep_count;
   CHECK_RESULT(GetReturnDropKeepCount(&drop_count, &keep_count));
@@ -1184,14 +1128,12 @@ Result BinaryReaderInterpreter::EndFunctionBody(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnLocalDeclCount(const State& state,
-                                                 uint32_t count) {
+Result BinaryReaderInterpreter::OnLocalDeclCount(uint32_t count) {
   current_func->local_decl_count = count;
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnLocalDecl(const State& state,
-                                            uint32_t decl_index,
+Result BinaryReaderInterpreter::OnLocalDecl(uint32_t decl_index,
                                             uint32_t count,
                                             Type type) {
   current_func->local_count += count;
@@ -1226,21 +1168,19 @@ Result BinaryReaderInterpreter::CheckAlign(uint32_t alignment_log2,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnUnaryExpr(const State& state, Opcode opcode) {
+Result BinaryReaderInterpreter::OnUnaryExpr(Opcode opcode) {
   CHECK_RESULT(typechecker_on_unary(&typechecker, opcode));
   CHECK_RESULT(EmitOpcode(opcode));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnBinaryExpr(const State& state,
-                                             Opcode opcode) {
+Result BinaryReaderInterpreter::OnBinaryExpr(Opcode opcode) {
   CHECK_RESULT(typechecker_on_binary(&typechecker, opcode));
   CHECK_RESULT(EmitOpcode(opcode));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnBlockExpr(const State& state,
-                                            uint32_t num_types,
+Result BinaryReaderInterpreter::OnBlockExpr(uint32_t num_types,
                                             Type* sig_types) {
   TypeVector sig(sig_types, sig_types + num_types);
   CHECK_RESULT(typechecker_on_block(&typechecker, &sig));
@@ -1248,8 +1188,7 @@ Result BinaryReaderInterpreter::OnBlockExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnLoopExpr(const State& state,
-                                           uint32_t num_types,
+Result BinaryReaderInterpreter::OnLoopExpr(uint32_t num_types,
                                            Type* sig_types) {
   TypeVector sig(sig_types, sig_types + num_types);
   CHECK_RESULT(typechecker_on_loop(&typechecker, &sig));
@@ -1257,9 +1196,7 @@ Result BinaryReaderInterpreter::OnLoopExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnIfExpr(const State& state,
-                                         uint32_t num_types,
-                                         Type* sig_types) {
+Result BinaryReaderInterpreter::OnIfExpr(uint32_t num_types, Type* sig_types) {
   TypeVector sig(sig_types, sig_types + num_types);
   CHECK_RESULT(typechecker_on_if(&typechecker, &sig));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::BrUnless));
@@ -1269,7 +1206,7 @@ Result BinaryReaderInterpreter::OnIfExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnElseExpr(const State& state) {
+Result BinaryReaderInterpreter::OnElseExpr() {
   CHECK_RESULT(typechecker_on_else(&typechecker));
   Label* label = TopLabel();
   uint32_t fixup_cond_offset = label->fixup_offset;
@@ -1280,7 +1217,7 @@ Result BinaryReaderInterpreter::OnElseExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnEndExpr(const State& state) {
+Result BinaryReaderInterpreter::OnEndExpr() {
   TypeCheckerLabel* label;
   CHECK_RESULT(typechecker_get_label(&typechecker, 0, &label));
   LabelType label_type = label->label_type;
@@ -1293,7 +1230,7 @@ Result BinaryReaderInterpreter::OnEndExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnBrExpr(const State& state, uint32_t depth) {
+Result BinaryReaderInterpreter::OnBrExpr(uint32_t depth) {
   uint32_t drop_count, keep_count;
   CHECK_RESULT(GetBrDropKeepCount(depth, &drop_count, &keep_count));
   CHECK_RESULT(typechecker_on_br(&typechecker, depth));
@@ -1301,7 +1238,7 @@ Result BinaryReaderInterpreter::OnBrExpr(const State& state, uint32_t depth) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnBrIfExpr(const State& state, uint32_t depth) {
+Result BinaryReaderInterpreter::OnBrIfExpr(uint32_t depth) {
   uint32_t drop_count, keep_count;
   CHECK_RESULT(typechecker_on_br_if(&typechecker, depth));
   CHECK_RESULT(GetBrDropKeepCount(depth, &drop_count, &keep_count));
@@ -1314,8 +1251,7 @@ Result BinaryReaderInterpreter::OnBrIfExpr(const State& state, uint32_t depth) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnBrTableExpr(const State& state,
-                                              uint32_t num_targets,
+Result BinaryReaderInterpreter::OnBrTableExpr(uint32_t num_targets,
                                               uint32_t* target_depths,
                                               uint32_t default_target_depth) {
   CHECK_RESULT(typechecker_begin_br_table(&typechecker));
@@ -1339,8 +1275,7 @@ Result BinaryReaderInterpreter::OnBrTableExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnCallExpr(const State& state,
-                                           uint32_t func_index) {
+Result BinaryReaderInterpreter::OnCallExpr(uint32_t func_index) {
   InterpreterFunc* func = GetFuncByModuleIndex(func_index);
   InterpreterFuncSignature* sig = GetSignatureByEnvIndex(func->sig_index);
   CHECK_RESULT(
@@ -1357,8 +1292,7 @@ Result BinaryReaderInterpreter::OnCallExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnCallIndirectExpr(const State& state,
-                                                   uint32_t sig_index) {
+Result BinaryReaderInterpreter::OnCallIndirectExpr(uint32_t sig_index) {
   if (module->table_index == WABT_INVALID_INDEX) {
     PrintError("found call_indirect operator, but no table");
     return Result::Error;
@@ -1373,56 +1307,49 @@ Result BinaryReaderInterpreter::OnCallIndirectExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnCompareExpr(const State& state,
-                                              Opcode opcode) {
-  return OnBinaryExpr(state, opcode);
+Result BinaryReaderInterpreter::OnCompareExpr(Opcode opcode) {
+  return OnBinaryExpr(opcode);
 }
 
-Result BinaryReaderInterpreter::OnConvertExpr(const State& state,
-                                              Opcode opcode) {
-  return OnUnaryExpr(state, opcode);
+Result BinaryReaderInterpreter::OnConvertExpr(Opcode opcode) {
+  return OnUnaryExpr(opcode);
 }
 
-Result BinaryReaderInterpreter::OnDropExpr(const State& state) {
+Result BinaryReaderInterpreter::OnDropExpr() {
   CHECK_RESULT(typechecker_on_drop(&typechecker));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::Drop));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnI32ConstExpr(const State& state,
-                                               uint32_t value) {
+Result BinaryReaderInterpreter::OnI32ConstExpr(uint32_t value) {
   CHECK_RESULT(typechecker_on_const(&typechecker, Type::I32));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::I32Const));
   CHECK_RESULT(EmitI32(value));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnI64ConstExpr(const State& state,
-                                               uint64_t value) {
+Result BinaryReaderInterpreter::OnI64ConstExpr(uint64_t value) {
   CHECK_RESULT(typechecker_on_const(&typechecker, Type::I64));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::I64Const));
   CHECK_RESULT(EmitI64(value));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnF32ConstExpr(const State& state,
-                                               uint32_t value_bits) {
+Result BinaryReaderInterpreter::OnF32ConstExpr(uint32_t value_bits) {
   CHECK_RESULT(typechecker_on_const(&typechecker, Type::F32));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::F32Const));
   CHECK_RESULT(EmitI32(value_bits));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnF64ConstExpr(const State& state,
-                                               uint64_t value_bits) {
+Result BinaryReaderInterpreter::OnF64ConstExpr(uint64_t value_bits) {
   CHECK_RESULT(typechecker_on_const(&typechecker, Type::F64));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::F64Const));
   CHECK_RESULT(EmitI64(value_bits));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnGetGlobalExpr(const State& state,
-                                                uint32_t global_index) {
+Result BinaryReaderInterpreter::OnGetGlobalExpr(uint32_t global_index) {
   CHECK_RESULT(CheckGlobal(global_index));
   Type type = GetGlobalTypeByModuleIndex(global_index);
   CHECK_RESULT(typechecker_on_get_global(&typechecker, type));
@@ -1431,8 +1358,7 @@ Result BinaryReaderInterpreter::OnGetGlobalExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnSetGlobalExpr(const State& state,
-                                                uint32_t global_index) {
+Result BinaryReaderInterpreter::OnSetGlobalExpr(uint32_t global_index) {
   CHECK_RESULT(CheckGlobal(global_index));
   InterpreterGlobal* global = GetGlobalByModuleIndex(global_index);
   if (!global->mutable_) {
@@ -1452,8 +1378,7 @@ uint32_t BinaryReaderInterpreter::TranslateLocalIndex(uint32_t local_index) {
          current_func->param_and_local_types.size() - local_index;
 }
 
-Result BinaryReaderInterpreter::OnGetLocalExpr(const State& state,
-                                               uint32_t local_index) {
+Result BinaryReaderInterpreter::OnGetLocalExpr(uint32_t local_index) {
   CHECK_RESULT(CheckLocal(local_index));
   Type type = GetLocalTypeByIndex(current_func, local_index);
   /* Get the translated index before calling typechecker_on_get_local
@@ -1466,8 +1391,7 @@ Result BinaryReaderInterpreter::OnGetLocalExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnSetLocalExpr(const State& state,
-                                               uint32_t local_index) {
+Result BinaryReaderInterpreter::OnSetLocalExpr(uint32_t local_index) {
   CHECK_RESULT(CheckLocal(local_index));
   Type type = GetLocalTypeByIndex(current_func, local_index);
   CHECK_RESULT(typechecker_on_set_local(&typechecker, type));
@@ -1476,8 +1400,7 @@ Result BinaryReaderInterpreter::OnSetLocalExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnTeeLocalExpr(const State& state,
-                                               uint32_t local_index) {
+Result BinaryReaderInterpreter::OnTeeLocalExpr(uint32_t local_index) {
   CHECK_RESULT(CheckLocal(local_index));
   Type type = GetLocalTypeByIndex(current_func, local_index);
   CHECK_RESULT(typechecker_on_tee_local(&typechecker, type));
@@ -1486,7 +1409,7 @@ Result BinaryReaderInterpreter::OnTeeLocalExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnGrowMemoryExpr(const State& state) {
+Result BinaryReaderInterpreter::OnGrowMemoryExpr() {
   CHECK_RESULT(CheckHasMemory(Opcode::GrowMemory));
   CHECK_RESULT(typechecker_on_grow_memory(&typechecker));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::GrowMemory));
@@ -1494,8 +1417,7 @@ Result BinaryReaderInterpreter::OnGrowMemoryExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnLoadExpr(const State& state,
-                                           Opcode opcode,
+Result BinaryReaderInterpreter::OnLoadExpr(Opcode opcode,
                                            uint32_t alignment_log2,
                                            uint32_t offset) {
   CHECK_RESULT(CheckHasMemory(opcode));
@@ -1507,8 +1429,7 @@ Result BinaryReaderInterpreter::OnLoadExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnStoreExpr(const State& state,
-                                            Opcode opcode,
+Result BinaryReaderInterpreter::OnStoreExpr(Opcode opcode,
                                             uint32_t alignment_log2,
                                             uint32_t offset) {
   CHECK_RESULT(CheckHasMemory(opcode));
@@ -1520,7 +1441,7 @@ Result BinaryReaderInterpreter::OnStoreExpr(const State& state,
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnCurrentMemoryExpr(const State& state) {
+Result BinaryReaderInterpreter::OnCurrentMemoryExpr() {
   CHECK_RESULT(CheckHasMemory(Opcode::CurrentMemory));
   CHECK_RESULT(typechecker_on_current_memory(&typechecker));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::CurrentMemory));
@@ -1528,11 +1449,11 @@ Result BinaryReaderInterpreter::OnCurrentMemoryExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnNopExpr(const State& state) {
+Result BinaryReaderInterpreter::OnNopExpr() {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnReturnExpr(const State& state) {
+Result BinaryReaderInterpreter::OnReturnExpr() {
   uint32_t drop_count, keep_count;
   CHECK_RESULT(GetReturnDropKeepCount(&drop_count, &keep_count));
   CHECK_RESULT(typechecker_on_return(&typechecker));
@@ -1541,19 +1462,19 @@ Result BinaryReaderInterpreter::OnReturnExpr(const State& state) {
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnSelectExpr(const State& state) {
+Result BinaryReaderInterpreter::OnSelectExpr() {
   CHECK_RESULT(typechecker_on_select(&typechecker));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::Select));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::OnUnreachableExpr(const State& state) {
+Result BinaryReaderInterpreter::OnUnreachableExpr() {
   CHECK_RESULT(typechecker_on_unreachable(&typechecker));
   CHECK_RESULT(EmitOpcode(InterpreterOpcode::Unreachable));
   return Result::Ok;
 }
 
-Result BinaryReaderInterpreter::EndModule(const State& state) {
+Result BinaryReaderInterpreter::EndModule() {
   for (ElemSegmentInfo& info : elem_segment_infos) {
     *info.dst = info.func_index;
   }
